@@ -17,6 +17,9 @@ namespace Valve.VR.InteractionSystem
 		public float shiftSpeed = 16.0f;
 		public bool showInstructions = true;
 
+		public Hand leftHand;
+		public Hand rightHand;
+
 		private Vector3 startEulerAngles;
 		private Vector3 startMousePosition;
 		private float realTime;
@@ -99,7 +102,24 @@ namespace Valve.VR.InteractionSystem
 				GUI.Label( new Rect( 10.0f, 10.0f, 600.0f, 400.0f ),
 					"WASD EQ/Arrow Keys to translate the camera\n" +
 					"Right mouse click to rotate the camera\n" +
-					"Left mouse click for standard interactions.\n" );
+					"Left mouse click for standard interactions.\n");
+				if(leftHand.controllerMovementType == Hand.Controller_Movement_Type.position){
+					GUI.Label( new Rect( 300.0f, 10.0f, 600.0f, 400.0f ),
+						"LeftAlt: MOVE\n"+
+						"UJ forward/backward\n"+
+						"HK left/right\n"+
+						"IM up/down\n");
+				}
+				else if(leftHand.controllerMovementType == Hand.Controller_Movement_Type.rotation){
+					GUI.Label( new Rect( 300.0f, 10.0f, 600.0f, 400.0f ),
+						"LeftAlt: ROTATE\n"+
+						"UJ up/down\n"+
+						"HK left/right\n"+
+						"YI anticlockwise/clockwise\n");
+				}
+				GUI.Label( new Rect( 10.0f, 200.0f, 600.0f, 400.0f ),
+					"Spacebar to switch Hand: \n\n" +
+					leftHand.activeHand.ToString());
 			}
 		}
 	}

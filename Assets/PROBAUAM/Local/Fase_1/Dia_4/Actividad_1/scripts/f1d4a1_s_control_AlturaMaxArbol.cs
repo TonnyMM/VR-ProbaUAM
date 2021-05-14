@@ -6,9 +6,8 @@ using Valve.VR.InteractionSystem;
 
 public class f1d4a1_s_control_AlturaMaxArbol : MonoBehaviour
 {
-    
     public SteamVR_Action_Boolean acciongatillo_bool;//aqui llamamos a las acciones del Bindindig
-	public SteamVR_Action_Pose posicion_control;
+	//public SteamVR_Action_Pose posicion_control;
     public GameObject prefab_arbol;
     public GameObject posicion_inicial;//es la posicion donde debe de iniciar a jugar
 
@@ -33,9 +32,25 @@ public class f1d4a1_s_control_AlturaMaxArbol : MonoBehaviour
    {
         if(Vector3.Distance(Player.instance.hmdTransform.position.normalized,posicion_inicial.transform.position.normalized) < .4f)
         {
-            //Sistema_GeneraSilla.GeneraSilla();
-            valorgatillo_L = acciongatillo_bool.GetStateDown(SteamVR_Input_Sources.LeftHand);
-	        valorgatillo_R = acciongatillo_bool.GetStateDown(SteamVR_Input_Sources.RightHand);
+            if(mano_izquierda.GetComponent<Hand>().noSteamVRFallbackCamera == null){
+                //HMD
+                valorgatillo_L = acciongatillo_bool.GetStateDown(SteamVR_Input_Sources.LeftHand);
+                valorgatillo_R = acciongatillo_bool.GetStateDown(SteamVR_Input_Sources.RightHand);
+            }
+            else{
+                //Simulador
+                //Resviso en las manos del simulador si la mano que esta activa es la izquierda o la derecha 
+                //y luego escucho si se genera el evento del mouse que indica el clic con el gatillo
+                if(mano_izquierda.GetComponent<Hand>().activeHand == SteamVR_Input_Sources.LeftHand){
+                    valorgatillo_L = Input.GetMouseButtonDown(0);
+                }
+                else if(mano_izquierda.GetComponent<Hand>().activeHand == SteamVR_Input_Sources.RightHand){
+                    valorgatillo_R = Input.GetMouseButtonDown(0);
+                }
+            }
+
+            Debug.Log("gsatillo L: " + valorgatillo_L);
+            Debug.Log("gsatillo R: " + valorgatillo_R);
         }
 
         //** */Esta parte revisamos cuando el jugador presiona el gatiillo a la altura deseada/

@@ -34,6 +34,13 @@ namespace Valve.VR.InteractionSystem
             AllowSidegrade = 1 << 7, // The object is able to switch from a pinch grab to a grip grab. Decreases likelyhood of a good throw but also decreases likelyhood of accidental drop
         };
 
+
+        public enum Controller_Movement_Type
+        {
+            position = 1,
+            rotation = 2
+        };
+
         public const AttachmentFlags defaultAttachmentFlags = AttachmentFlags.ParentToHand |
                                                               AttachmentFlags.DetachOthers |
                                                               AttachmentFlags.DetachFromOtherHand |
@@ -42,6 +49,11 @@ namespace Valve.VR.InteractionSystem
 
         public Hand otherHand;
         public SteamVR_Input_Sources handType;
+        public SteamVR_Input_Sources activeHand = SteamVR_Input_Sources.LeftHand;
+
+        public bool customizedSimulator = true;
+
+        public Controller_Movement_Type controllerMovementType = Controller_Movement_Type.position;
 
         public SteamVR_Behaviour_Pose trackedObject;
 
@@ -70,6 +82,7 @@ namespace Valve.VR.InteractionSystem
         [Tooltip("A transform on the hand to center attached objects on")]
         public Transform objectAttachmentPoint;
 
+        //public GameObject noSteamVRFallback;
         public Camera noSteamVRFallbackCamera;
         public float noSteamVRFallbackMaxDistanceNoItem = 10.0f;
         public float noSteamVRFallbackMaxDistanceWithItem = 0.5f;
@@ -984,43 +997,137 @@ namespace Valve.VR.InteractionSystem
         {
             if (noSteamVRFallbackCamera)
             {
-                Ray ray = noSteamVRFallbackCamera.ScreenPointToRay(Input.mousePosition);
-
-                if (attachedObjects.Count > 0)
+                if (!customizedSimulator)
                 {
-                    // Holding down the mouse:
-                    // move around a fixed distance from the camera
-                    transform.position = ray.origin + noSteamVRFallbackInteractorDistance * ray.direction;
-                }
-                else
-                {
-                    // Not holding down the mouse:
-                    // cast out a ray to see what we should mouse over
+                    //STEAMVR simulator
+                    //Debug.DrawRay(transform.position, transform.forward * 3, Color.green);
+                    //Ray ray = new Ray(transform.position, transform.forward);
 
-                    // Don't want to hit the hand and anything underneath it
-                    // So move it back behind the camera when we do the raycast
-                    Vector3 oldPosition = transform.position;
-                    transform.position = noSteamVRFallbackCamera.transform.forward * (-1000.0f);
+                    
+                    Ray ray = noSteamVRFallbackCamera.ScreenPointToRay(Input.mousePosition);
 
-                    RaycastHit raycastHit;
-                    if (Physics.Raycast(ray, out raycastHit, noSteamVRFallbackMaxDistanceNoItem))
+                    if (attachedObjects.Count > 0)
                     {
-                        transform.position = raycastHit.point;
-
-                        // Remember this distance in case we click and drag the mouse
-                        noSteamVRFallbackInteractorDistance = Mathf.Min(noSteamVRFallbackMaxDistanceNoItem, raycastHit.distance);
-                    }
-                    else if (noSteamVRFallbackInteractorDistance > 0.0f)
-                    {
-                        // Move it around at the distance we last had a hit
-                        transform.position = ray.origin + Mathf.Min(noSteamVRFallbackMaxDistanceNoItem, noSteamVRFallbackInteractorDistance) * ray.direction;
+                        // Holding down the mouse:
+                        // move around a fixed distance from the camera
+                        transform.position = ray.origin + noSteamVRFallbackInteractorDistance * ray.direction;
                     }
                     else
                     {
-                        // Didn't hit, just leave it where it was
-                        transform.position = oldPosition;
+                        // Not holding down the mouse:
+                        // cast out a ray to see what we should mouse over
+
+                        // Don't want to hit the hand and anything underneath it
+                        // So move it back behind the camera when we do the raycast
+                        Vector3 oldPosition = transform.position;
+                        transform.position = noSteamVRFallbackCamera.transform.forward * (-1000.0f);
+
+                        RaycastHit raycastHit;
+                        if (Physics.Raycast(ray, out raycastHit, noSteamVRFallbackMaxDistanceNoItem))
+                        {
+                            transform.position = raycastHit.point;
+
+                            // Remember this distance in case we click and drag the mouse
+                            noSteamVRFallbackInteractorDistance = Mathf.Min(noSteamVRFallbackMaxDistanceNoItem, raycastHit.distance);
+                        }
+                        else if (noSteamVRFallbackInteractorDistance > 0.0f)
+                        {
+                            // Move it around at the distance we last had a hit
+                            transform.position = ray.origin + Mathf.Min(noSteamVRFallbackMaxDistanceNoItem, noSteamVRFallbackInteractorDistance) * ray.direction;
+                        }
+                        else
+                        {
+                            // Didn't hit, just leave it where it was
+                            transform.position = oldPosition;
+                        }
                     }
+                    
                 }
+                else
+                {
+                    //OUR SIMULATOR
+                    if (handType == activeHand)
+                    {
+
+                        if (controllerMovementType == Controller_Movement_Type.position)
+                        {
+
+                            float forward = 0.0f;
+                            if (Input.GetKey(KeyCode.U))
+                            {
+                                forward += 1.0f;
+                            }
+                            if (Input.GetKey(KeyCode.J))
+                            {
+                                forward -= 1.0f;
+                            }
+
+                            float up = 0.0f;
+                            if (Input.GetKey(KeyCode.I))
+                            {
+                                up += 1.0f;
+                            }
+                            if (Input.GetKey(KeyCode.M))
+                            {
+                                up -= 1.0f;
+                            }
+
+                            float right = 0.0f;
+                            if (Input.GetKey(KeyCode.K))
+                            {
+                                right += 1.0f;
+                            }
+                            if (Input.GetKey(KeyCode.H))
+                            {
+                                right -= 1.0f;
+                            }
+
+                            Vector3 delta = new Vector3(right, up, forward) /** currentSpeed*/ * Time.deltaTime;
+
+                            transform.position += transform.TransformDirection(delta);
+                        }
+                        else if (controllerMovementType == Controller_Movement_Type.rotation)
+                        {
+                            float xAngle = 0.0f;
+                            if (Input.GetKey(KeyCode.U))
+                            {
+                                xAngle -= 1.0f;
+                            }
+                            if (Input.GetKey(KeyCode.J))
+                            {
+                                xAngle += 1.0f;
+                            }
+
+                            float zAngle = 0.0f;
+                            if (Input.GetKey(KeyCode.Y))
+                            {
+                                zAngle += 1.0f;
+                            }
+                            if (Input.GetKey(KeyCode.I))
+                            {
+                                zAngle -= 1.0f;
+                            }
+
+                            float yAngle = 0.0f;
+                            if (Input.GetKey(KeyCode.K))
+                            {
+                                yAngle += 1.0f;
+                            }
+                            if (Input.GetKey(KeyCode.H))
+                            {
+                                yAngle -= 1.0f;
+                            }
+
+                            Vector3 delta = new Vector3(xAngle, yAngle, zAngle) /** currentSpeed*/ * 30 * Time.deltaTime;
+                            transform.localEulerAngles = transform.localEulerAngles + delta;
+
+                        }
+
+
+                    }
+
+                }
+
             }
         }
 
@@ -1100,6 +1207,29 @@ namespace Valve.VR.InteractionSystem
         protected virtual void Update()
         {
             UpdateNoSteamVRFallback();
+
+            //Cambio de un simulador al otro
+            if (Input.GetKeyUp(KeyCode.Tab))
+            {
+                customizedSimulator = !customizedSimulator;
+            }
+
+            //Cambio la mano activa para el Objeto Fallback
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                if (activeHand == SteamVR_Input_Sources.LeftHand)
+                    activeHand = SteamVR_Input_Sources.RightHand;
+                else
+                    activeHand = SteamVR_Input_Sources.LeftHand;
+            }
+
+            if (Input.GetKeyUp(KeyCode.RightAlt))
+            {
+                if (controllerMovementType == Controller_Movement_Type.position)
+                    controllerMovementType = Controller_Movement_Type.rotation;
+                else
+                    controllerMovementType = Controller_Movement_Type.position;
+            }
 
             GameObject attachedObject = currentAttachedObject;
             if (attachedObject != null)
