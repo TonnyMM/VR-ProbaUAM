@@ -1192,8 +1192,6 @@ GameObject:
   - component: {fileID: 4487129590954519358}
   - component: {fileID: 4487129590954519359}
   - component: {fileID: 4487129590954519297}
-  - component: {fileID: 4487129590954519356}
-  - component: {fileID: 4487129590954519299}
   - component: {fileID: 4487129590954519296}
   - component: {fileID: 2939297448664381534}
   m_Layer: 0
@@ -1265,8 +1263,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.16651174, y: 0.21179056, z: 0.17598557}
-  m_Center: {x: 0.0034732074, y: 0.13449883, z: 0.023485897}
+  m_Size: {x: 0.16651174, y: 0.07423562, z: 0.16330846}
+  m_Center: {x: 0.0034732076, y: 0.041222528, z: 0.017147345}
 --- !u!82 &4487129590954519297
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1363,41 +1361,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &4487129590954519356
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5576742219997037245}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d96cb3fa78a50b2408e1cef5e22a05f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 0.5
-  up: 5
-  caminar: 0
-  posicionInicial: {fileID: 0}
-  puntero: {fileID: 0}
-  iniciador: {fileID: 0}
-  catToCopy: []
---- !u!114 &4487129590954519299
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5576742219997037245}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e81fff1e1958d4d45afb38598754fed0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Animacion: {fileID: 1564380307117481428}
-  nav: {fileID: 4487129590954519296}
-  movimiento: {fileID: 4487129590954519356}
-  audios: {fileID: 4487129590954519297}
 --- !u!195 &4487129590954519296
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1407,12 +1370,12 @@ NavMeshAgent:
   m_GameObject: {fileID: 5576742219997037245}
   m_Enabled: 0
   m_AgentTypeID: 0
-  m_Radius: 0.42
-  m_Speed: 0.5
+  m_Radius: 0.06
+  m_Speed: 0.2
   m_Acceleration: 8
   avoidancePriority: 52
   m_AngularSpeed: 120
-  m_StoppingDistance: 1.5
+  m_StoppingDistance: 0.25
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -1432,11 +1395,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e43c77985822dd84d98541e3bf63aed8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  caminar: 0
+  caminarArbol: 0
+  caminarSuelo: 0
   siguePuntero: 1
   puntero: {fileID: 0}
   speed: 0.5
   limite: {fileID: 0}
+  player: {fileID: 0}
+  animacion: {fileID: 0}
+  posicionMeta: {x: 0, y: 0, z: 0}
+  controlEscena: {fileID: 0}
+  gatoID: 0
 --- !u!1 &5853007034731821145
 GameObject:
   m_ObjectHideFlags: 0
