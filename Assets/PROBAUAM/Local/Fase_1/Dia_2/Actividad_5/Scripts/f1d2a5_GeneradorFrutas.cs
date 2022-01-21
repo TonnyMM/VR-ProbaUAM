@@ -10,7 +10,7 @@ public class f1d2a5_GeneradorFrutas : MonoBehaviour
     private float speed, aumento = 10;
     private GameObject clon;
     public GameObject detector;
-    private GameObject Score;
+    public GameObject Score;
 
     // Start is called before the first frame update
     void Start()
@@ -49,9 +49,9 @@ public class f1d2a5_GeneradorFrutas : MonoBehaviour
                 //caso que no haya perdido
                 clon.transform.localScale = new Vector3(aumento + 0.2f, aumento + 0.2f, aumento + 0.2f);
                 if (Score.GetComponent<global_sc_Contador>().getContador()>=20) {
-                    speed = Random.Range(2.2f, 4.3f);
+                  speed = Random.Range(1.2f, 2.3f);
                 }
-                else {speed = Random.Range(0.3f, 1.9f); }
+                else {speed = Random.Range(0.3f, 0.9f); }
                 
                 clon.GetComponent<MeshCollider>().isTrigger = true;
                 clon.transform.position = Vector4.Lerp(clon.transform.position, Camera.transform.position, Time.deltaTime * speed);
